@@ -1,0 +1,46 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.python-version
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+wheels/
+
+# Secrets / local tooling
+.claude/settings.local.json
+
+# Auth / session state
+sheriahub_kenya_data/.session_cookies.json
+sheriahub_kenya_data/*.cookies.json
+cookies.txt
+
+# Scraped data — large, not source-of-truth
+sheriahub_kenya_data/*.jsonl
+sheriahub_kenya_data/*.jsonl.*
+sheriahub_kenya_data/pdfs/
+sheriahub_kenya_data/*.log
+sheriahub_kenya_data/*_progress.json
+sheriahub_kenya_data/kenya_case_urls*.txt
+sheriahub_kenya_data/failed_urls.txt
+
+# Statute PDFs (source material, stored in S3)
+Statutes/
+
+# OS / editor
+.DS_Store
+*.swp
+*~
+.idea/
+.vscode/
+
+# Logs
+*.log

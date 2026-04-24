@@ -1,0 +1,18 @@
+[project]
+name = "sheriahub-scraper"
+version = "0.1.0"
+description = "SheriaHub Kenya Case Law Scraper for RAG Pipeline"
+requires-python = ">=3.13"
+dependencies = [
+    "requests>=2.31",
+    "beautifulsoup4>=4.12",
+    "lxml>=5.0",
+    "tqdm>=4.66",
+    "boto3>=1.42.63",
+    "pinecone>=8.1.0",
+    "google-genai>=1.69.0",
+    "pymupdf>=1.27.2.2",
+]
+
+[project.scripts]
+sheriahub-scraper = "sheriahub_kenya_scraper:main"
