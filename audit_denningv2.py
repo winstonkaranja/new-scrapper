@@ -45,11 +45,26 @@ LANDMARK_TOKENS = {
 }
 
 
-def iter_ids(index, namespace: str):
-    """Paginate all vector IDs in a namespace via index.list()."""
-    for page in index.list(namespace=namespace):
-        for vector_id in page:
-            yield vector_id
+def iter_ids(index, namespace: str, page_limit: int = 99):
+    """Paginate all vector IDs via list_paginated() with explicit token.
+
+    Avoids Pinecone's auto-generator which can hit 414 URI-Too-Large
+    for namespaces with long vector IDs.
+    """
+    pagination_token = None
+    while True:
+        kwargs = {"namespace": namespace, "limit": page_limit}
+        if pagination_token:
+            kwargs["pagination_token"] = pagination_token
+        resp = index.list_paginated(**kwargs)
+        for vec in resp.vectors or []:
+            vec_id = vec.id if hasattr(vec, "id") else vec.get("id")
+            if vec_id:
+                yield vec_id
+        pagination = resp.pagination if hasattr(resp, "pagination") else None
+        pagination_token = getattr(pagination, "next", None) if pagination else None
+        if not pagination_token:
+            return
 
 
 def audit_namespace(index, namespace: str) -> dict:
