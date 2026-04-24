@@ -141,7 +141,7 @@ def build_metadata(record: dict, chunk_text_str: str, chunk_idx: int, total_chun
         "text_length": record.get("text_length", 0),
         "chunk_index": chunk_idx,
         "total_chunks": total_chunks,
-        "chunk_text": chunk_text_str[:1000],
+        "chunk_text": chunk_text_str[:CHUNK_SIZE_CHARS],
     }
 
 

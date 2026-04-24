@@ -195,7 +195,7 @@ def build_metadata(
         "text_length": full_text_length,
         "chunk_index": chunk_idx,
         "total_chunks": total_chunks,
-        "chunk_text": chunk_text_str[:1000],
+        "chunk_text": chunk_text_str[:CHUNK_SIZE_CHARS],
     }
 
 
