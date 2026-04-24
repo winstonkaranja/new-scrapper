@@ -33,7 +33,11 @@ def _require_env(name: str) -> str:
 
 INDEX_NAME = "denningv2"
 TRUNCATION_THRESHOLD = 5_000  # chunk_text shorter than this is suspicious
-FETCH_BATCH = 100             # Pinecone fetch() limit per call
+# Pinecone fetch() sends IDs as URL query params. AWS ELB in front of
+# Pinecone caps HTTP/1.1 URLs at ~8KB. kenyalaw.org slugs average ~120
+# chars, so 40 IDs * 120 + overhead ≈ 5KB stays safely under the limit.
+# Raising to 100 produces 414 URI-Too-Large at deep pagination.
+FETCH_BATCH = 40
 
 # Landmarks we expect to find. Extend as needed.
 LANDMARK_TOKENS = {
