@@ -165,6 +165,19 @@ def chunk_text(text: str) -> list[str]:
 
 # ─── METADATA ───────────────────────────────────────────────────────────
 
+def _classify_statute_authority_rank(slug: str, title: str, citation: str) -> str:
+    """Lazy-import the WI-7a classifier so classification logic stays
+    single-sourced in audit_authority_ranks.py."""
+    from audit_authority_ranks import classify_statute
+    rank, _ = classify_statute({
+        "slug": slug,
+        "title": title,
+        "case_id": f"statute-{slug}",
+        "case_action": "Statute",
+    })
+    return rank
+
+
 def build_metadata(
     slug: str,
     title: str,
@@ -196,6 +209,8 @@ def build_metadata(
         "chunk_index": chunk_idx,
         "total_chunks": total_chunks,
         "chunk_text": chunk_text_str[:CHUNK_SIZE_CHARS],
+        # WI-7: authority_rank tagged at ingest time — see pinecone_upsert.py
+        "authority_rank": _classify_statute_authority_rank(slug, title, citation),
     }
 
 
