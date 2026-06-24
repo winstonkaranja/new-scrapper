@@ -121,6 +121,23 @@ def chunk_text(text: str) -> list[str]:
 
 # ─── METADATA ───────────────────────────────────────────────────────────
 
+
+def _classify_case_authority_rank(record: dict) -> str:
+    """Lazy-import the WI-7a classifier to avoid circular imports and
+    keep classification logic single-sourced in audit_authority_ranks.py.
+    """
+    from audit_authority_ranks import classify_case
+    # audit_authority_ranks.classify_case expects a metadata-shaped dict
+    # with court/citation/case_action keys — our record dict has the same
+    # fields under the same names (the upsert populates them directly).
+    rank, _ = classify_case({
+        "court": record.get("court", ""),
+        "citation": record.get("citation", ""),
+        "case_action": record.get("case_action", ""),
+    })
+    return rank
+
+
 def build_metadata(record: dict, chunk_text_str: str, chunk_idx: int, total_chunks: int) -> dict:
     """Build the Pinecone metadata dict for a single vector."""
     return {
@@ -141,7 +158,11 @@ def build_metadata(record: dict, chunk_text_str: str, chunk_idx: int, total_chun
         "text_length": record.get("text_length", 0),
         "chunk_index": chunk_idx,
         "total_chunks": total_chunks,
-        "chunk_text": chunk_text_str[:1000],
+        "chunk_text": chunk_text_str[:CHUNK_SIZE_CHARS],
+        # WI-7: authority_rank tagged at ingest time so fresh scrapes don't
+        # require a follow-up backfill pass. Classification is deterministic
+        # per audit_authority_ranks.classify_case.
+        "authority_rank": _classify_case_authority_rank(record),
     }
 
 
